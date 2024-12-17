@@ -1,61 +1,172 @@
-/* TABS ON BOTTOM */
-/*Everything from here to the dashed line is for moving the tabs to the bottom of the menu bar*/
-:root{ --uc-titlebar-padding: 0px; }
-@media (-moz-os-version: windows-win10){
-  :root[sizemode="maximized"][tabsintitlebar]{ --uc-titlebar-padding: 8px }
+/* ACTIVE TAB COLOR */
+.tabbrowser-tab[selected="true"] .tab-background {
+  background: linear-gradient(#ff5e45, #820524) !important;
 }
+
+
+
+/* WIDER PINNED TABS */
+.tabbrowser-tab[pinned] { width: 90px !important; }
+.tab-label-container[pinned] { visibility: visible !important; }
+
+
+
+/* URL BAR HIGHLIGHT COLOR */
+::-moz-selection {background-color: #962633 !important;}
+
+
+
+/* URL BAR RESULTS LINKS COLOR */
+.urlbarView-url {
+    color: #962633 !important;
+}
+
+
+
+/* URL BAR & RESULTS BACKGROUND COLOR */
+@-moz-document url(chrome://browser/content/browser.xul),
+               url(chrome://browser/content/browser.xhtml) {
+    #urlbar-results{
+        background-color: #1c1b22 !important;
+	}
+	#urlbar-background {
+    background: #1c1b22 !important;
+	}
+	#urlbar[breakout][breakout-extend] #urlbar-background {
+	border-color: #1c1b22 !important;
+	}
+}
+
+
+
+/* HAMBURGER MENU COLORS */
+panelview {
+  --arrowpanel-background: #1c1b22 !important;
+  color: white !important;
+}
+
+
+
+/* BOOKMARKS TOOLBAR MENU COLORS */
+#PlacesToolbar menupopup[placespopup="true"] {
+  --arrowpanel-background: #2b2a33 !important;
+  --arrowpanel-color: white !important;
+}
+
+
+
+/* TABS ON BOTTOM */
+/* Source file https://github.com/MrOtherGuy/firefox-csshacks/tree/master/chrome/tabs_on_bottom.css made available under Mozilla Public License v. 2.0
+See the above repository for updates as well as full license text. */
+
+/* IMPORTANT
+Get window_control_placeholder_support.css
+Window controls will be all wrong without it.
+Additionally on Linux, you may need to get:
+linux_gtk_window_control_patch.css
+Use tabs_on_bottom_menubar_on_top_patch.css if you
+have menubar permanently enabled and want it on top 
+*/
+#TabsToolbar { order: 1; }
 #toolbar-menubar[autohide="true"] > .titlebar-buttonbox-container,
 #TabsToolbar > .titlebar-buttonbox-container{
   position: fixed;
   display: block;
-  top: var(--uc-titlebar-padding,0px);
+  top: 0px;
   right:0;
   height: 40px;
+}
+@media (-moz-gtk-csd-reversed-placement),
+       (-moz-platform: macos){
+  .titlebar-buttonbox-container{ left:0; right: unset !important; }
+}
+@supports -moz-bool-pref("userchrome.force-window-controls-on-left.enabled"){
+  .titlebar-buttonbox-container{ left:0; right: unset !important; }
 }
 
 :root[uidensity="compact"] #TabsToolbar > .titlebar-buttonbox-container{ height: 32px }
 
 #toolbar-menubar[inactive] > .titlebar-buttonbox-container{ opacity: 0 }
 
-#navigator-toolbox{ padding-top: var(--uc-titlebar-padding,0px) !important; }
-
-.titlebar-buttonbox-container > .titlebar-buttonbox{ height: 110%; }
+.titlebar-buttonbox-container > .titlebar-buttonbox{ height: 100%; }
 
 #titlebar{
-  -moz-box-ordinal-group: 2;
+  -moz-box-ordinal-group: 2; /* Fx <112 compatibility */
+  order: 2;
   -moz-appearance: none !important;
   --tabs-navbar-shadow-size: 0px;
+  --uc-menubar-vertical-overlap: 19px; /* for hide_tabs_with_one_tab_w_window_controls.css compatibility */
+}
+/* Re-order window and tab notification boxes */
+#navigator-toolbox > div{ display: contents }
+.global-notificationbox,
+#tab-notification-deck{
+  -moz-box-ordinal-group: 2; /* Fx <112 compatibility */
+  order: 2;
 }
 
-.titlebar-placeholder,
 #TabsToolbar .titlebar-spacer{ display: none; }
 /* Also hide the toolbox bottom border which isn't at bottom with this setup */
 #navigator-toolbox::after{ display: none !important; }
 
-@media (-moz-gtk-csd-close-button){ .titlebar-button{ -moz-box-orient: vertical } }
+@media (-moz-gtk-csd-close-button){
+  .titlebar-button{
+    -moz-box-orient: vertical; /* Fx <112 compatibility */
+    flex-direction: column;
+  }
+}
+
+/* At Activated Menubar */
+:root:not([chromehidden~="menubar"], [sizemode="fullscreen"]) #toolbar-menubar:not([autohide="true"]) + #TabsToolbar > .titlebar-buttonbox-container {
+  display: block !important;
+}
+#toolbar-menubar:not([autohide="true"]) > .titlebar-buttonbox-container {
+  visibility: hidden;
+}
 
 /* These exist only for compatibility with autohide-tabstoolbar.css */
 toolbox#navigator-toolbox > toolbar#nav-bar.browser-toolbar{ animation: none; }
 #navigator-toolbox:hover #TabsToolbar{ animation: slidein ease-out 48ms 1 }
+#TabsToolbar > .titlebar-buttonbox-container{ visibility: visible }
+#navigator-toolbox:not(:-moz-lwtheme){ background-color: -moz-dialog }
 
+/* Source file https://github.com/MrOtherGuy/firefox-csshacks/tree/master/chrome/tabs_on_bottom_menubar_on_top_patch.css made available under Mozilla Public License v. 2.0
+See the above repository for updates as well as full license text. */
+
+/* Menubar on top patch - use with tabs_on_bottom.css */
+/* Only really useful if menubar is ALWAYS visible */
 
 :root:not([sizemode="fullscreen"]){ --uc-window-control-width: 0px !important }
 
 :root{
-/* height if native titlebar is enabled, assumes empty menubar */
+   /* height if native titlebar is enabled, assumes empty menubar */
   --uc-menubar-height: 20px;
 }
 :root[tabsintitlebar]{
-/* height when native titlebar is disabled, more roomy so can fit buttons etc. */
-  --uc-menubar-height: 29px; 
+  /* height when native titlebar is disabled, more roomy so can fit buttons etc. */
+  --uc-menubar-height: 29px;
+}
+:root:is([sizemode="fullscreen"],[chromehidden~="menubar"]){
+  --uc-menubar-height: 0px;
+}
+/* Since menubar is statically at top, remove fake drag-space that might be set by window_control_placeholder_support.css */
+:root:not([sizemode="fullscreen"]) #nav-bar{ border-inline-width: 0 }
+
+#navigator-toolbox{
+  -moz-window-dragging: drag;
+  padding-top: var(--uc-menubar-height) !important;
 }
 
-#navigator-toolbox{ padding-top: calc(var(--uc-menubar-height) + var(--uc-titlebar-padding,0px)) !important }
-:root[sizemode="fullscreen"] #navigator-toolbox{ padding-top: 0px !important; }
+/* Remove window dragging from notification boxes */
+#tab-notification-deck,
+.global-notificationbox{
+  -moz-window-dragging: no-drag;
+}
+
 #toolbar-menubar{
   position: fixed;
   display: flex;
-  top: var(--uc-titlebar-padding,0px);
+  top: 0px;
   height: var(--uc-menubar-height);
   width: 100%;
   overflow: hidden;
@@ -67,275 +178,14 @@ toolbox#navigator-toolbox > toolbar#nav-bar.browser-toolbar{ animation: none; }
 #toolbar-menubar > spacer[flex]{
   order: 99;
   flex-grow: 1;
-  min-width: var(--uc-window-drag-space-width,20px);
+  min-width: var(--uc-window-drag-space-post,20px);
 }
-
-#toolbar-menubar .titlebar-button{ padding: 2px 17px !important;  }
 
 #toolbar-menubar .toolbarbutton-1 { --toolbarbutton-inner-padding: 3px }
 
-
-/* -------------------------------------------------------------------------------- */
-
-/* ACTIVE TAB COLOR */
-/* This sets the color of the active tab background */
-.tab-background[selected="true"] {
-background-color: #7C0233 !important; 
-
-/* This fixes whatever causes the active tab to be grey instead of the color selected above */
-background-image: none !important; 
+:root:not([sizemode="fullscreen"]) #toolbar-menubar.browser-toolbar > .titlebar-buttonbox-container{
+  visibility: visible;
 }
-/* This sets the color of the little line above the active tab */
-.tab-line[selected="true"] {
-background-color : #ff4c4c !important; 
-}
-/* This changes this color of the active tab text*/
-.tabbrowser-tab .tab-label[selected="true"] { 
-color: #FF4C4C !important; 
-}
-
-
-
-/* ACTIVE TAB WIDTH */
-/* This makes the active tab always stretch to be the same width no matter how scrunched your inactive tabs are from having a million of them open */
-.tabbrowser-tab[selected="true"] {
-min-width: 155px !important;
-}
-
-
-
-/* ACTIVE TAB SHADOWING */
-/* This puts a drop shadow behind the active tab to accentuate it */
-.tabbrowser-tab[visuallyselected="true"] {
-box-shadow: 0px 0px 10px 0px #000;
-}
-
-
-
-/* ACTIVE TAB AUDIO ICONS */
-.tab-icon-sound[soundplaying][selected="true"] {
-  color: #FF4C4C !important;
-}
-.tab-icon-sound[muted][selected="true"] {
-  color: #FF4C4C !important;
-}
-
-
-
-/* INACTIVE TAB COLOR */
-/* This changes the color of the inactive tab font ("color") and background ("background") */
-.tabbrowser-tab { 
-color: #939aa5 !important;
-background-color: #1c1b22 !important;  
-   
-/* This fixes whatever causes the active tab to be grey instead of the color selected above */
-background-image: none !important; 
-}
-
-
-
-/* TAB CLOSE ICONS */
-/* Inactive Tab Close Icons */
-.tabbrowser-tab .close-icon {
-fill: #6f6f73 !important;
-}
-.tabbrowser-tab .close-icon:hover {
-fill: white !important;
-background-color: #c00 !important;
-border-radius: 4px;
-}
-/* Active Tab Close Icon */
-.tabbrowser-tab .close-icon[selected="true"] {
-fill: #630727 !important;
-}
-.tabbrowser-tab .close-icon:hover[selected="true"] {
-fill: rgb(255, 106, 76) !important;
-background-color: #300011 !important;
-border-radius: 4px;
-}
-
-
-
-/* ACTIVE TAB COLOR FOR PRIVATE BROWSING */
-/* This sets the color of the active private tab background */
-#main-window[privatebrowsingmode] .tab-background[selected="true"] {
-background-color: #383084 !important; 
-
-/* This fixes whatever causes the private active tab to be grey instead of the color selected above */
-background-image: none !important; 
-}
-/* This sets the color of the little line above the private tab */
-#main-window[privatebrowsingmode] .tab-line[selected="true"] {
-background-color : #189cef !important; 
-}
-/* This changes this color of the private active tab text*/
-#main-window[privatebrowsingmode] .tabbrowser-tab .tab-label[selected="true"] { 
-color: #189cef !important; 
-}
-
-
-
-/* TAB CLOSE ICONS FOR PRIVATE BROWSING */
-/* Private Inactive Tab Close Icons */
-#main-window[privatebrowsingmode] .tabbrowser-tab .close-icon {
-fill: #6f6f73 !important;
-}
-#main-window[privatebrowsingmode] .tabbrowser-tab .close-icon:hover {
-fill: white !important;
-background-color: #2246b9 !important;
-border-radius: 4px;
-}
-/* Private Active Tab Close Icon */
-#main-window[privatebrowsingmode] .tabbrowser-tab .close-icon[selected="true"] {
-fill: #08102b !important;
-}
-#main-window[privatebrowsingmode] .tabbrowser-tab .close-icon:hover[selected="true"] {
-fill: #189cef !important;
-background-color: #08102b !important;
-border-radius: 4px;
-}
-
-
-
-/* ACTIVE TAB AUDIO ICONS FOR PRIVATE BROWSING */
-#main-window[privatebrowsingmode] .tab-icon-sound[soundplaying][selected="true"] {
-  color: #189cef !important;
-}
-#main-window[privatebrowsingmode] .tab-icon-sound[muted][selected="true"] {
-  color: #189cef !important;
-}
-
-#main-window:not([chromehidden*="toolbar"]) #navigator-toolbox {padding-bottom: var(--tab-min-height) !important;}
-/* This bit fixes the tabs having weird alignment in Private Browsing */
-.private-browsing-indicator {display: none !important;}
-.accessibility-indicator    {display: none !important;}
-
-
-
-/* TOOLBARS TEXT COLORS */
-.menubar-text, .bookmark-item .toolbarbutton-text {
-   color: rgb(161, 164, 168);
-}
-
-
-
-/* LOADING PAGES HAVE A GRAY BACKGROUND */
-/* This makes it so that when you go to a new page or open a new tab, it's gray instead of blinding white while loading */
-browser[type="content-primary"], 
-browser[type="content"] {
-  background: #2b2a33 !important;
-}
-
-
-
-/* RIGHT-CLICK MENUS ARE DARK */
-menupopup {
-	-moz-appearance: none !important;
-	padding: 8px 8px 8px 8px !important;
-	background-color: #1c1b22 !important;
-	border: none !important;
-	min-width: 280px !important;
-}
-menuseparator {
-	-moz-appearance: none !important;
-	border: none !important;
-	padding: 0.3px 0px 0.3px 0px !important;
-	margin: 4px 8px 4px 8px !important;
-	background-color: #808080 !important;
-}
-menuitem, menu {
-	-moz-appearance: none !important;
-	color: white !important;
-	padding: 7.5px 10px 7.5px 10px !important;
-}
-menuitem[disabled="true"], menuitem[disabled="true"] > .menu-text {
-	color: gray !important;
-}
-menuitem:hover, menu:hover, menu[open="true"], menuitem[_moz-menuactive="true"]	 {
-	-moz-appearance: none !important;
-	padding: 7.5px 10px 7.5px 10px !important;
-	background-color: none !important;
-}
-menugroup {
-	padding: 0px !important;
-	background-color: transparent !important;
-}
-menuitem > .menu-text, menuitem > .menu-iconic-text {
-	color: white !important;
-}
-menuitem[type="checkbox"] {
-	padding-left: 8px !important;
-	padding-top: 6.5px !important;
-	padding-bottom: 6.5px !important;
-}
-menuitem[type="radio"] {
-	padding-left: 8px !important;
-	padding-top: 6.5px !important;
-	padding-bottom: 6.5px !important;
-}
-menuitem[type="checkbox"] > .menu-iconic-text, menuitem[type="radio"] > .menu-iconic-text {
-	padding-left: 5px !important;
-}
-menuitem[checked="true"][type="checkbox"] > .menu-iconic-left {
-	padding: 7px 0px 0px 0px !important;
-	border: solid white;
-	border-width: 0 0 2px 2px;
-	transform: rotate(-45deg) scale(.75);
-	margin-bottom: 4px !important;
-}
-menuitem[checked="true"][type="radio"] > .menu-iconic-left {
-	padding: 1px !important;
-	border: solid white;
-	height: 17px !important;
-	border-radius: 100%;
-	background: white;
-	transform: scale(.5); 
-}
-menucaption {
-	background-color: transparent !important;
-	color: white !important;
-}
-#ContentSelectDropdown > menupopup {
-	background-image: none !important;
-}
-#ContentSelectDropdown {
-	padding: 0px !important;
-}
-menulist {
-	-moz-appearance: none !important;
-	padding: 4px 4px 4px 4px !important;
-	border: 2px solid #666666 !important;
-	background-color: transparent !important;
-}
-menulist:hover {
-	padding: 4px 4px 4px 4px !important;
-	border: 2px solid #999999 !important;
-	background-color: transparent !important;
-}
-menulist[open="true"]  {
-	border: 2px solid #666666 !important;
-	background-color: #333333 !important;
-}
-#context-back > .menu-iconic-left, #context-forward > .menu-iconic-left, #context-reload > .menu-iconic-left, #context-stop > .menu-iconic-left, #context-bookmarkpage > .menu-iconic-left {
-	padding: 0px !important;
-}
-.menu-iconic-left {
-	-moz-appearance: none !important;
-	padding: 0px 5px 0px 9px !important;
-}
-.menu-right {
-	-moz-appearance: none !important;
-	padding: 7.5px !important;
-	margin-right: 6px !important;
-	color: white !important;
-	border: solid white;
-	border-width: 0 2px 2px 0px;
-	transform: rotate(-45deg) scale(.55);
-}
-tooltip {
-	-moz-appearance: none !important;
-	color: white !important;
-	background-color: #2B2B2B !important;
-	border: 1px solid #767676 !important;
-	padding: 6.5px !important;
+:root:not([chromehidden~="menubar"], [sizemode="fullscreen"]) #TabsToolbar#TabsToolbar#TabsToolbar > .titlebar-buttonbox-container {
+  display: none !important;
 }
