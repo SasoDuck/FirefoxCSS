@@ -1,0 +1,104 @@
+/* ACTIVE TAB COLOR */
+.tabbrowser-tab[selected="true"] .tab-background {
+  background: linear-gradient(#ff5e45, #820524) !important;
+}
+
+
+
+/* WIDER PINNED TABS */
+.tabbrowser-tab[pinned] { width: 90px !important; }
+.tab-label-container[pinned] { visibility: visible !important; }
+
+
+
+/* URL BAR HIGHLIGHT COLOR */
+::-moz-selection {background-color: #962633 !important;}
+
+
+
+/* URL BAR RESULTS LINKS COLOR */
+.urlbarView-url {
+    color: #962633 !important;
+}
+
+
+
+/* URL BAR & RESULTS BACKGROUND COLOR */
+@-moz-document url(chrome://browser/content/browser.xul),
+               url(chrome://browser/content/browser.xhtml) {
+    #urlbar-results{
+        background-color: #1c1b22 !important;
+	}
+	#urlbar-background {
+    background: #1c1b22 !important;
+	}
+	#urlbar[breakout][breakout-extend] #urlbar-background {
+	border-color: #1c1b22 !important;
+	}
+}
+
+
+
+/* HAMBURGER MENU COLORS */
+panelview {
+  --arrowpanel-background: #1c1b22 !important;
+  color: white !important;
+}
+
+
+
+/* BOOKMARKS TOOLBAR MENU COLORS */
+#PlacesToolbar menupopup[placespopup="true"] {
+  --arrowpanel-background: #2b2a33 !important;
+  --arrowpanel-color: white !important;
+}
+
+
+
+/* TABS ON BOTTOM */
+@media (-moz-bool-pref: "userchrome.force-window-controls-on-left.enabled"){
+  #nav-bar > .titlebar-buttonbox-container{
+    order: -1 !important;
+    > .titlebar-buttonbox{
+      flex-direction: row-reverse;
+    }
+  }
+}
+@media not (-moz-bool-pref: "sidebar.verticalTabs"){
+  .global-notificationbox,
+  #tab-notification-deck,
+  #TabsToolbar{
+    order: 1;
+  }
+  #TabsToolbar > :is(.titlebar-spacer,.titlebar-buttonbox-container){
+    display: none;
+  }
+  :root[sizemode="fullscreen"] #nav-bar > .titlebar-buttonbox-container{
+    display: flex !important;
+  }
+  :root:is([tabsintitlebar],[customtitlebar]) #toolbar-menubar:not([autohide="false"]) ~ #nav-bar{
+    > .titlebar-buttonbox-container{
+      display: flex !important;
+    }
+    :root[sizemode="normal"] & {
+      > .titlebar-spacer{
+        display: flex !important;
+      }
+    }
+    :root[sizemode="maximized"] & {
+      > .titlebar-spacer[type="post-tabs"]{
+        display: flex !important;
+      }
+      @media (-moz-bool-pref: "userchrome.force-window-controls-on-left.enabled"),
+        (-moz-gtk-csd-reversed-placement),
+        (-moz-platform: macos){
+        > .titlebar-spacer[type="post-tabs"]{
+          display: none !important;
+        }
+        > .titlebar-spacer[type="pre-tabs"]{
+          display: flex !important;
+        }
+      }
+    }
+  }
+}
